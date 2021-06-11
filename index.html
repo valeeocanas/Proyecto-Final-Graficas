@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Tropical Island</title>
+    <style>
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <script type="module">
+        import * as THREE from '../three.js/build/three.module.js';
+        import { OrbitControls } from '../three.js/examples/jsm/controls/OrbitControls.js';
+        import { MaterialLoader } from '../three.js/src/loaders/MaterialLoader.js';
+        import { ObjectLoader } from '../three.js/src/loaders/ObjectLoader.js';
+        import { TextureLoader } from '../three.js/src/loaders/TextureLoader.js';
+        import { GLTFLoader } from '../three.js/examples/jsm/loaders/GLTFLoader.js';
+        import { AmbientLight } from '../three.js/src/lights/AmbientLight.js';
+        import { MeshBasicMaterial } from '../three.js/src/materials/MeshBasicMaterial.js';
+        import { BoxGeometry } from '../three.js/src/geometries/BoxGeometry.js';
+        import { GUI } from '../three.js/examples/jsm/libs/dat.gui.module.js';
+
+        //Init of the Scene and the Camera and the renderer
+        var The_Golf_Cart = null;
+        var Start_Time = (new Date()).getTime();
+        var Start_Movement = false;
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000000);
+        camera.position.x = 2300;
+        camera.position.y = 800;
+        camera.position.z = 5800;
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        scene.background = new THREE.Color( 0xccddff );
+        scene.fog = new THREE.Fog( 0xccddff, 500, 0 );
+        //Making adjestments to the size of the screen when it resize
+        window.addEventListener('resize', function () {
+            var width = window.innerWidth;
+            var height = window.innerHeight;
+            renderer.setSize(width, height);
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+        });
+        //Adding Mouse COntrols
+        const controls = new OrbitControls(camera, renderer.domElement);
+
+        //Adding The Directional Light
+        var directionalLight1 = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight1.position.set(-1200, 1600, 1200);
+        scene.add(directionalLight1);
+        //Another Light
+        var directionalLight2 = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight2.position.set(1200, 600, 1200);
+        scene.add(directionalLight2);
+
+      
+
+        
+        
+
+        //Functions for loading Objects along with thier materials and textures
+        //LOADING CARRITO DE GOLF 
+        function loadGolfCart() {
+            var loader = new GLTFLoader();
+            loader.load('models/area_9_golf_cart/scene.gltf', function (gltf) {
+                gltf.scene.position.set(-13000, 0, 1000);
+                gltf.scene.scale.set(80, 80, 80);
+                scene.add(gltf.scene);
+                The_Golf_Cart = gltf.scene;
+
+            });
+            }
+
+
+        function createFloor() {
+            
+            var geometry = new THREE.PlaneBufferGeometry( 105500, 125500 );
+            var material = new THREE.MeshToonMaterial( {color: 0x336633} );
+            var plane = new THREE.Mesh( geometry, material );
+            plane.rotation.x = -1 * Math.PI/2;
+            plane.position.y = 0;
+            scene.add( plane );
+        }
+
+
+        var cx, cy, cz, sx, sy, sz;
+        function createTrunk(cy,cx,cz) {
+            const TextureLoader = new THREE.TextureLoader();
+            const normalTexture = TextureLoader.load('./tronco.jpg');
+
+            const geometry = new THREE.CylinderGeometry( 800, 800, 7000, 400 );
+            const material = new THREE.MeshBasicMaterial()
+            material.map = normalTexture;
+            material.color = new THREE.Color(0x864b00);
+            //const geometry = new THREE.CylinderGeometry( 800, 800, 7000, 400 );
+            //const material = new THREE.MeshBasicMaterial( {color: 0x864b00} );
+            const cylinder = new THREE.Mesh( geometry, material );
+            cylinder.position.y = cy; // 1000;
+            cylinder.position.x = cx; //-300;
+            cylinder.position.z = cz; //-30000;
+            scene.add( cylinder );
+        }
+
+        function createHojaArbol(sy,sx,sz){
+            const TextureLoader = new THREE.TextureLoader();
+            const normalTexture = TextureLoader.load('./arbol1.jpg');
+
+            const geometry2 = new THREE.SphereGeometry( 3000, 200, 320 );
+            const material2 = new THREE.MeshBasicMaterial()
+            material2.map = normalTexture;
+            material2.color = new THREE.Color(0x336633);
+            //const geometry2 = new THREE.SphereGeometry( 3000, 200, 320 );
+            //const material2 = new THREE.MeshBasicMaterial( {color: 0x336633} );
+            const sphere1 = new THREE.Mesh( geometry2, material2 );
+            sphere1.position.y = sy; //7000;
+            sphere1.position.x = sx; //-300;
+            sphere1.position.z = sz; //-30000;
+
+            scene.add(sphere1);
+        }
+    
+
+        
+        function createLago() {
+            const TextureLoader = new THREE.TextureLoader();
+            const normalTexture = TextureLoader.load('./agua1.jpeg');
+
+            const geometry = new THREE.CylinderGeometry( 9000, 9000, 20, 100 );
+            const material = new THREE.MeshBasicMaterial()
+            material.map = normalTexture;
+            material.color = new THREE.Color(0x72bcd4);
+            //const material = new THREE.MeshBasicMaterial( {color: 0x72bcd4} );
+            const cylinder = new THREE.Mesh( geometry, material );
+            cylinder.position.y = 0;
+            cylinder.position.x = 11000; //9500
+            cylinder.position.z = 100;
+            scene.add( cylinder );
+
+        }
+
+        
+        //Calling the loading functions so the objects appear on the scene
+        loadGolfCart();
+        createFloor();
+        //createTrunk();
+        createTrunk(1000,-300,-30000);
+        createHojaArbol(7000,-300,-30000);
+        createTrunk(1000,2500,-20000);
+        createHojaArbol(7000,2500,-20000);
+        createTrunk(1000,5100,-40000);
+        createHojaArbol(7000,5100,-40000);
+        createTrunk(1000,7000,-22000);
+        createHojaArbol(7000,7000,-22000);
+
+        createLago();
+       // ejem();
+
+
+
+        var move_right = false;
+        //Scene Logic
+        var update = function () {
+
+            
+             //Boat Movement
+             if (The_Golf_Cart !== null) {
+                if (The_Golf_Cart.position.z > -5000) {
+                    move_right = false;
+                    The_Golf_Cart.rotation.set(0, 30, 0);
+                }
+                else if (The_Golf_Cart.position.z < -45000) {
+                    move_right = true;
+                    The_Golf_Cart.rotation.set(0, 360, 0); //90
+                }
+
+                if (move_right) {
+                    The_Golf_Cart.position.z += 120;
+                }
+                else {
+                    The_Golf_Cart.position.z -= 120;
+                }
+            }            
+
+        };
+
+        //Draw Scene
+        var render = function () {
+            renderer.render(scene, camera);
+        };
+
+        // Run Scene Loop(update, render, repeat)
+        var SceneLoop = function () {
+            requestAnimationFrame(SceneLoop);
+            update();
+            render();
+        };
+
+        SceneLoop();
+
+    </script>
+</body>
+
+</html>
