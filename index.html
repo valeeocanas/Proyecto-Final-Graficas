@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Tropical Island</title>
+    <title>Proyecto Escena Golf</title>
     <style>
         body {
             margin: 0;
@@ -23,7 +23,7 @@
         import { BoxGeometry } from '../three.js/src/geometries/BoxGeometry.js';
         import { GUI } from '../three.js/examples/jsm/libs/dat.gui.module.js';
 
-        //Init of the Scene and the Camera and the renderer
+        //Inicializar la escena, camara y render
         var The_Golf_Cart = null;
         var Start_Time = (new Date()).getTime();
         var Start_Movement = false;
@@ -36,9 +36,11 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
+        //Determinar el fondo de la escena - azul (cielo)
         scene.background = new THREE.Color( 0xccddff );
         scene.fog = new THREE.Fog( 0xccddff, 500, 0 );
-        //Making adjestments to the size of the screen when it resize
+
+        //Ajustes para poder hacer un resize a la pantalla
         window.addEventListener('resize', function () {
             var width = window.innerWidth;
             var height = window.innerHeight;
@@ -46,25 +48,22 @@
             camera.aspect = width / height;
             camera.updateProjectionMatrix();
         });
-        //Adding Mouse COntrols
+
+        //Controles
         const controls = new OrbitControls(camera, renderer.domElement);
 
-        //Adding The Directional Light
-        var directionalLight1 = new THREE.DirectionalLight(0xffffff, 1);
-        directionalLight1.position.set(-1200, 1600, 1200);
-        scene.add(directionalLight1);
-        //Another Light
-        var directionalLight2 = new THREE.DirectionalLight(0xffffff, 1);
-        directionalLight2.position.set(1200, 600, 1200);
-        scene.add(directionalLight2);
+        //Luz Direccional
+        var dirLight = new THREE.DirectionalLight(0xffffff, 1);
+        dirLight.position.set(-1200, 1600, 1200);
+        scene.add(dirLight);
 
+        var dirLight1 = new THREE.DirectionalLight(0xffffff, 1);
+        dirLight1.position.set(1200, 600, 1200);
+        scene.add(dirLight1);
       
 
-        
-        
-
-        //Functions for loading Objects along with thier materials and textures
-        //LOADING CARRITO DE GOLF 
+        //Funciones para cargar objetos con sus materiales y texturas 
+        //Cargar modelo 3d carrito de golf
         function loadGolfCart() {
             var loader = new GLTFLoader();
             loader.load('models/area_9_golf_cart/scene.gltf', function (gltf) {
@@ -76,7 +75,7 @@
             });
             }
 
-
+        //Crear geométricamente el piso
         function createFloor() {
             
             var geometry = new THREE.PlaneBufferGeometry( 105500, 125500 );
@@ -87,7 +86,7 @@
             scene.add( plane );
         }
 
-
+        //Crear tronco del arbol con sus texturas y materiales
         var cx, cy, cz, sx, sy, sz;
         function createTrunk(cy,cx,cz) {
             const TextureLoader = new THREE.TextureLoader();
@@ -106,6 +105,7 @@
             scene.add( cylinder );
         }
 
+        //Crear hojas del arbol (esfera) con sus texturas y materiales
         function createHojaArbol(sy,sx,sz){
             const TextureLoader = new THREE.TextureLoader();
             const normalTexture = TextureLoader.load('./arbol1.jpg');
@@ -124,8 +124,7 @@
             scene.add(sphere1);
         }
     
-
-        
+        //Crear lago con sus texturas y materiales
         function createLago() {
             const TextureLoader = new THREE.TextureLoader();
             const normalTexture = TextureLoader.load('./agua1.jpeg');
@@ -144,10 +143,9 @@
         }
 
         
-        //Calling the loading functions so the objects appear on the scene
+        //Llamando a las funciones para que aparezcan en la escena
         loadGolfCart();
         createFloor();
-        //createTrunk();
         createTrunk(1000,-300,-30000);
         createHojaArbol(7000,-300,-30000);
         createTrunk(1000,2500,-20000);
@@ -156,18 +154,13 @@
         createHojaArbol(7000,5100,-40000);
         createTrunk(1000,7000,-22000);
         createHojaArbol(7000,7000,-22000);
-
         createLago();
-       // ejem();
-
 
 
         var move_right = false;
-        //Scene Logic
         var update = function () {
-
-            
-             //Boat Movement
+   
+             //Movimiento establecido del carrito de golf
              if (The_Golf_Cart !== null) {
                 if (The_Golf_Cart.position.z > -5000) {
                     move_right = false;
@@ -188,12 +181,12 @@
 
         };
 
-        //Draw Scene
+        //Escena - render
         var render = function () {
             renderer.render(scene, camera);
         };
 
-        // Run Scene Loop(update, render, repeat)
+        // Correr la escena en loop
         var SceneLoop = function () {
             requestAnimationFrame(SceneLoop);
             update();
